@@ -4,19 +4,20 @@ import repository.CrewRepository
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-// 메뉴 번호 입력 파싱
-fun parseMenuNumber(raw: String): String {
-    val menuNum = raw.trim()
-    if(menuNum !in setOf("1", "2", "3", "Q")) throw IllegalArgumentException("[ERROR] 잘못된 메뉴 입력입니다.")
+private val TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
-    return menuNum
+fun parseMenuNumber(raw: String): String {
+    val s = raw.trim()
+    if (s !in setOf("1", "2", "3", "4", "Q")) {
+        throw IllegalArgumentException("[ERROR] 잘못된 형식을 입력하였습니다.")
+    }
+    return s
 }
 
-// 닉네임 파싱
 fun parseInputNickname(raw: String, crewRepository: CrewRepository): String {
     val nickname = raw.trim()
     if (nickname.isEmpty()) {
-        throw IllegalArgumentException("[ERROR] 닉네임을 입력해 주세요.")
+        throw IllegalArgumentException("[ERROR] 잘못된 형식을 입력하였습니다.")
     }
     if (!crewRepository.exists(nickname)) {
         throw IllegalArgumentException("[ERROR] 등록되지 않은 닉네임입니다.")
@@ -24,8 +25,12 @@ fun parseInputNickname(raw: String, crewRepository: CrewRepository): String {
     return nickname
 }
 
-// 시간 입력 포맷팅 및 파싱
-private val TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+fun parseDayOfMonth(raw: String): Int {
+    val s = raw.trim()
+    val day = s.toIntOrNull() ?: throw IllegalArgumentException("[ERROR] 잘못된 형식을 입력하였습니다.")
+    if (day !in 1..31) throw IllegalArgumentException("[ERROR] 잘못된 형식을 입력하였습니다.")
+    return day
+}
 
 fun parseInputTime(raw: String): LocalTime {
     val s = raw.trim()

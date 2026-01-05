@@ -8,16 +8,18 @@ class CrewRepository(resourcePath: String) {
 
     fun exists(nickname: String): Boolean = nickname in crews
 
+    fun findAll(): List<String> = crews.toList().sorted()
+
     private fun loadCrewNames(resourcePath: String): Set<String> {
-        val inputStream = requireNotNull(
-            javaClass.getResourceAsStream(resourcePath)
-        ) { "리소스 파일을 찾을 수 없습니다: $resourcePath" }
+        val inputStream = requireNotNull(javaClass.getResourceAsStream(resourcePath)) {
+            "리소스 파일을 찾을 수 없습니다: $resourcePath"
+        }
 
         BufferedReader(InputStreamReader(inputStream)).use { br ->
             return br.lineSequence()
                 .map { it.trim() }
                 .filter { it.isNotEmpty() }
-                // 만약 CSV라면 "닉네임,..." 형태일 수 있으니 첫 컬럼만 쓰기
+                .filterNot { it.startsWith("nickname", ignoreCase = true) } // 헤더 제거
                 .map { line -> line.split(",")[0].trim() }
                 .toSet()
         }
